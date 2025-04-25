@@ -3,14 +3,25 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@api/*": [
+        "./api/*"
+      ],
+      "@assets/*": [
+        "./assets/*"
+      ],
+      "@features/*": [
+        "./features/*"
+      ],
+      "@shared/*": [
+        "./shared/*"
+      ],
     }
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
+    ".eslintrc.cjs",
+    "babel.config.js",
+    "openapi-ts.config.ts",
+    "src",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
   ]
