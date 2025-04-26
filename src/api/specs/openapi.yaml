@@ -2,160 +2,240 @@ openapi: 3.0.3
 info:
   title: Filemeto API
   version: 1.0.0
-  description: API for managing users and their posts
-
+  version: 1.0.0emto
+  description: Filmemto OpenAPI specification
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 0.0.1
+servers:
+  - url: http://{host}:{port}/{basePath}
+    description: Local development server
+    variables:
+      host:
+        default: localhost
+      port:
+        default: '8080'
+      basePath:
+        default: v1
+tags:
+  - name: Stats
+    description: Statistics used for the Dashboard screen.
 paths:
-  /users:
+  /stats:
     get:
-      summary: Get all users
+      summary: Get a list of scripts
+      operationId: getStats
+      tags:
+        - Stats
+      security:
+        - oauth_scheme:
+            - read
       responses:
         '200':
-          description: A list of users
-    post:
-      summary: Create a new user
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserInput'
-      responses:
-        '201':
-          description: User created
-
-  /users/{id}:
-    get:
-      summary: Get a user by ID
-      parameters:
-        - $ref: '#/components/parameters/UserId'
-      responses:
-        '200':
-          description: A user
-    put:
-      summary: Update a user
-      parameters:
-        - $ref: '#/components/parameters/UserId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserInput'
-      responses:
-        '200':
-          description: User updated
-    delete:
-      summary: Delete a user
-      parameters:
-        - $ref: '#/components/parameters/UserId'
-      responses:
-        '204':
-          description: User deleted
-
-  /posts:
-    get:
-      summary: Get all posts
-      responses:
-        '200':
-          description: A list of posts
-    post:
-      summary: Create a new post
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PostInput'
-      responses:
-        '201':
-          description: Post created
-
-  /posts/{id}:
-    get:
-      summary: Get a post by ID
-      parameters:
-        - $ref: '#/components/parameters/PostId'
-      responses:
-        '200':
-          description: A post
-    put:
-      summary: Update a post
-      parameters:
-        - $ref: '#/components/parameters/PostId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PostInput'
-      responses:
-        '200':
-          description: Post updated
-    delete:
-      summary: Delete a post
-      parameters:
-        - $ref: '#/components/parameters/PostId'
-      responses:
-        '204':
-          description: Post deleted
-
+          description: Statistics for Dashboard page
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Stats'
+                type: array
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
-  parameters:
-    UserId:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: integer
-    PostId:
-      name: id
-      in: path
-      required: true
-      schema:
-        type: integer
-
+  securitySchemes:
+    oauth_scheme:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://example.com/oauth/authorize
+          tokenUrl: https://example.com/oauth/token
+          scopes:
+            read: Grants read access to resources
+            write: Grants write access to resources
+            delete: Grants delete access to resources
   schemas:
-    User:
+    Stats:
       type: object
       properties:
-        id:
-          type: integer
-        name:
-          type: string
-        email:
-          type: string
-    UserInput:
-      type: object
-      required:
-        - name
-        - email
-      properties:
-        name:
-          type: string
-        email:
-          type: string
-
-    Post:
+        questionnaires:
+          type: object
+          properties:
+            rating:
+              type: number
+              format: float
+          required:
+            - rating
+    Unauthorized:
       type: object
       properties:
-        id:
-          type: integer
+        type:
+          type: string
+          example: about:blank
+          description: An absolute URI that identifies the problem type. When dereferenced, it SHOULD provide human-readable documentation for the problem type (e.g., using HTML). When this member is not present its value is assumed to be 'about:blank'.
         title:
           type: string
-        content:
+          example: Unauthorized
+          description: A short, human-readable summary of the problem type. It SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization.
+        detail:
           type: string
-        userId:
+          example: No authorization token provided
+          description: A human-readable explanation specific to this occurrence of the problem.
+        status:
           type: integer
-    PostInput:
-      type: object
+          example: 401
+          enum:
+            - 401
+          description: The HTTP status code generated by the origin server for this occurrence of the problem.
       required:
+        - type
         - title
-        - content
-        - userId
+        - detail
+        - status
+    Forbidden:
+      type: object
       properties:
+        type:
+          type: string
+          example: about:blank
+          description: An absolute URI that identifies the problem type. When dereferenced, it SHOULD provide human-readable documentation for the problem type (e.g., using HTML). When this member is not present its value is assumed to be 'about:blank'.
         title:
           type: string
-        content:
+          example: Forbidden
+          description: A short, human-readable summary of the problem type. It SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization.
+        detail:
           type: string
-        userId:
+          example: You don't have the permission to access the requested resource. It is either read-protected or not readable by the server.
+          description: A human-readable explanation specific to this occurrence of the problem.
+        status:
           type: integer
+          example: 403
+          enum:
+            - 403
+          description: The HTTP status code generated by the origin server for this occurrence of the problem.
+      required:
+        - type
+        - title
+        - detail
+        - status
+    InternalServerError:
+      type: object
+      properties:
+        type:
+          type: string
+          example: about:blank
+          description: An absolute URI that identifies the problem type. When dereferenced, it SHOULD provide human-readable documentation for the problem type (e.g., using HTML). When this member is not present its value is assumed to be 'about:blank'.
+        title:
+          type: string
+          example: Internal Server Error
+          description: A short, human-readable summary of the problem type. It SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization.
+        detail:
+          type: string
+          example: The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.
+          description: A human-readable explanation specific to this occurrence of the problem.
+        status:
+          type: integer
+          example: 500
+          enum:
+            - 500
+          description: The HTTP status code generated by the origin server for this occurrence of the problem.
+      required:
+        - type
+        - title
+        - detail
+        - status
+    NotFound:
+      type: object
+      properties:
+        type:
+          type: string
+          example: about:blank
+          description: An absolute URI that identifies the problem type. When dereferenced, it SHOULD provide human-readable documentation for the problem type (e.g., using HTML). When this member is not present its value is assumed to be 'about:blank'.
+        title:
+          type: string
+          example: Not Found
+          description: A short, human-readable summary of the problem type. It SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization.
+        detail:
+          type: string
+          example: 'entity: chatbot with id: 58283a0e-64ba-4d9e-a8e5-3f74784846bc not found'
+          description: A human-readable explanation specific to this occurrence of the problem.
+        status:
+          type: integer
+          example: 404
+          enum:
+            - 404
+          description: The HTTP status code generated by the origin server for this occurrence of the problem.
+      required:
+        - type
+        - title
+        - detail
+        - status
+    BadRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          example: about:blank
+          description: An absolute URI that identifies the problem type. When dereferenced, it SHOULD provide human-readable documentation for the problem type (e.g., using HTML). When this member is not present its value is assumed to be 'about:blank'.
+        title:
+          type: string
+          example: Bad Request
+          description: A short, human-readable summary of the problem type. It SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization.
+        detail:
+          type: string
+          example: '''name'' is a required property'
+          description: A human-readable explanation specific to this occurrence of the problem.
+        status:
+          type: integer
+          example: 400
+          enum:
+            - 400
+          description: The HTTP status code generated by the origin server for this occurrence of the problem.
+      required:
+        - type
+        - title
+        - detail
+        - status
+  responses:
+    Unauthorized:
+      description: |
+        Invalid or no authorisation provided.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Unauthorized'
+    Forbidden:
+      description: |
+        Insufficient access.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Forbidden'
+    InternalServerError:
+      description: |
+        The server encountered an unexpected condition that prevented it from fulfilling the request.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/InternalServerError'
+    NoContent:
+      description: |
+        The request has been successfully processed, and there is no additional content to send in the response payload.
+    NotFound:
+      description: |
+        The requested resource could not be found on the server.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/NotFound'
+    BadRequest:
+      description: |
+        The server cannot process the request due to a client error, such as malformed syntax or invalid parameters.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/BadRequest'

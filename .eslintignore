@@ -1,3 +1,4 @@
+src/api/mocks
 src/api/services
 src/api/specs
 babel.config.js

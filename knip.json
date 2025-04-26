@@ -1,0 +1,14 @@
+{
+  "ignore": [
+    "src/api/mocks/*",
+    "src/api/services/**",
+    "src/i18n/i18n.ts",
+    "public/mockServiceWorker.js",
+    ".prettierrc.cjs",
+    "openapi-ts.config.ts",
+    "msw.polyfills.js"
+  ],
+  "rules": {
+    "unlisted": "off"
+  }
+}

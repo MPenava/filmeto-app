@@ -2,18 +2,19 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    "baseUrl": "./src",
     "paths": {
       "@api/*": [
-        "./api/*"
+        "api/*"
       ],
       "@assets/*": [
-        "./assets/*"
+        "assets/*"
       ],
       "@features/*": [
-        "./features/*"
+        "features/*"
       ],
       "@shared/*": [
-        "./shared/*"
+        "shared/*"
       ],
     }
   },
@@ -23,6 +24,7 @@
     "openapi-ts.config.ts",
     "src",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts", 
+    "msw.polyfills.js"
   ]
 }
